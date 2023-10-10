@@ -1,5 +1,5 @@
 import * as core from '@actions/core'
-import { wait } from './wait'
+import { connectToMQ, publishMessage } from './nats'
 
 /**
  * The main function for the action.
@@ -7,18 +7,26 @@ import { wait } from './wait'
  */
 export async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
+    const subject = core.getInput('subject')
+    const message = core.getInput('message')
+    const urls = core.getInput('urls')
+    const jwt = core.getInput('jwt')
+    const nKeySeed = core.getInput('nKeySeed')
 
-    // Debug logs are only output if the `ACTIONS_STEP_DEBUG` secret is true
-    core.debug(`Waiting ${ms} milliseconds ...`)
+    const nc = await connectToMQ({ urls, jwt, nKeySeed })
 
-    // Log the current timestamp, wait, then log the new timestamp
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
+    publishMessage(nc, subject, message)
 
-    // Set outputs for other workflow steps to use
-    core.setOutput('time', new Date().toTimeString())
+    await nc.close()
+
+    core.setOutput('published', `subject: ${subject}, message: ${message}`)
+    // check if the close was OK
+    const err = await nc.closed()
+    if (err) {
+      core.debug(`error closing:
+${err.message}`)
+      core.setFailed(err.message)
+    }
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)

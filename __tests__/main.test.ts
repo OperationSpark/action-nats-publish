@@ -7,74 +7,78 @@
  */
 
 import * as core from '@actions/core'
+import * as nats from 'nats'
 import * as main from '../src/main'
 
 // Mock the GitHub Actions core library
 const debugMock = jest.spyOn(core, 'debug')
 const getInputMock = jest.spyOn(core, 'getInput')
-const setFailedMock = jest.spyOn(core, 'setFailed')
+// const setFailedMock = jest.spyOn(core, 'setFailed')
 const setOutputMock = jest.spyOn(core, 'setOutput')
 
 // Mock the action's main function
 const runMock = jest.spyOn(main, 'run')
 
-// Other utilities
-const timeRegex = /^\d{2}:\d{2}:\d{2}/
+const connectMock = jest.spyOn(nats, 'connect')
 
 describe('action', () => {
   beforeEach(() => {
     jest.clearAllMocks()
   })
 
-  it('sets the time output', async () => {
+  const testValues = {
+    subject: 'subject.test',
+    urls: 'nats://localhost:4222',
+    message: '{"test": 1234}',
+    nKeySeed: 'SNOTAREALNKEYSEED',
+    jwt: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
+  }
+
+  it('Connects to NATS', async () => {
     // Set the action's inputs as return values from core.getInput()
     getInputMock.mockImplementation((name: string): string => {
       switch (name) {
-        case 'milliseconds':
-          return '500'
+        case 'subject':
+          return testValues.subject
+        case 'urls':
+          return testValues.urls
+        case 'message':
+          return testValues.message
+        case 'nKeySeed':
+          return testValues.nKeySeed
+        case 'jwt':
+          return testValues.jwt
         default:
           return ''
       }
     })
 
+    // Mock the NATS connection
+    const mockConnectImpl = async (): Promise<nats.NatsConnection> => {
+      const info = {
+        server_name: 'nats://localhost:4222'
+      } as nats.ServerInfo
+      return {
+        info,
+        publish: jest.fn(),
+        close: jest.fn(),
+        closed: jest.fn()
+      } as unknown as nats.NatsConnection
+    }
+    connectMock.mockImplementation(mockConnectImpl)
+
     await main.run()
     expect(runMock).toHaveReturned()
 
     // Verify that all of the core library functions were called correctly
-    expect(debugMock).toHaveBeenNthCalledWith(1, 'Waiting 500 milliseconds ...')
     expect(debugMock).toHaveBeenNthCalledWith(
-      2,
-      expect.stringMatching(timeRegex)
-    )
-    expect(debugMock).toHaveBeenNthCalledWith(
-      3,
-      expect.stringMatching(timeRegex)
+      1,
+      `NATS connected to nats://localhost:4222`
     )
     expect(setOutputMock).toHaveBeenNthCalledWith(
       1,
-      'time',
-      expect.stringMatching(timeRegex)
-    )
-  })
-
-  it('sets a failed status', async () => {
-    // Set the action's inputs as return values from core.getInput()
-    getInputMock.mockImplementation((name: string): string => {
-      switch (name) {
-        case 'milliseconds':
-          return 'this is not a number'
-        default:
-          return ''
-      }
-    })
-
-    await main.run()
-    expect(runMock).toHaveReturned()
-
-    // Verify that all of the core library functions were called correctly
-    expect(setFailedMock).toHaveBeenNthCalledWith(
-      1,
-      'milliseconds not a number'
+      'published',
+      `subject: subject.test, message: {"test": 1234}`
     )
   })
 })
