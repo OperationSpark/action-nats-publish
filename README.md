@@ -1,28 +1,54 @@
-# Create a JavaScript Action Using TypeScript
+# NATS-pub-action
 
 [![GitHub Super-Linter](https://github.com/actions/typescript-action/actions/workflows/linter.yml/badge.svg)](https://github.com/super-linter/super-linter)
 ![CI](https://github.com/actions/typescript-action/actions/workflows/ci.yml/badge.svg)
 
-Use this template to bootstrap the creation of a TypeScript action. :rocket:
+GitHub action to publish messages to a NATS server
 
-This template includes compilation support, tests, a validation workflow,
-publishing, and versioning guidance.
+## Inputs
 
-If you are new, there's also a simpler introduction in the
-[Hello world JavaScript action repository](https://github.com/actions/hello-world-javascript-action).
+### `subject`
 
-## Create Your Own Action
+**Required** The NATS subject where the messages should be published.
 
-To create your own action, you can use this repository as a template! Just
-follow the below instructions:
+### `message`
 
-1. Click the **Use this template** button at the top of the repository
-1. Select **Create a new repository**
-1. Select an owner and name for your new repository
-1. Click **Create repository**
-1. Clone your new repository
+**Required** JSON-serialized message. Default `"{}"`.
 
-## Initial Setup
+### `urls`
+
+**Required** Comma separated NATS server URLs. Example:
+`nats://localhost:4222,nats://localhost:4223`.
+
+### `jwt`
+
+JSON web token used to authenticate on the NATS server.
+
+### `nKeySeed`
+
+Secret
+[NKey seed](https://docs.nats.io/running-a-nats-service/configuration/securing_nats/auth_intro/nkey_auth)
+used to authenticate on the NATS server.
+
+## Outputs
+
+### `published`
+
+The `message` and the `subject` that was published.
+
+## Example usage
+
+```yaml
+uses: operationspark/action-nats-publish@v1
+with:
+  subject: 'operationspark.foo'
+  message: '{"data": "Hello world!"}'
+  urls: 'nat://localhost:4222'
+  jwt: ${{ secrets.NATS_JWT }}
+  nKeySeed: ${{ secrets.NATS_NKEY_SEED }}
+```
+
+## Initial Devlopment Setup
 
 After you've cloned the repository to your local machine or codespace, you'll
 need to perform some initial setup steps before you can develop your action.
@@ -66,9 +92,6 @@ need to perform some initial setup steps before you can develop your action.
 The [`action.yml`](action.yml) file defines metadata about your action, such as
 input(s) and output(s). For details about this file, see
 [Metadata syntax for GitHub Actions](https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions).
-
-When you copy this repository, update `action.yml` with the name, description,
-inputs, and outputs for your action.
 
 ## Update the Action Code
 

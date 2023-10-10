@@ -1,19 +1,27 @@
-name: 'The name of your action here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
-
-# Define your inputs here.
+name: nats-publish
+description: Publishes a message to a NATS subject
+author: Operation Spark
 inputs:
-  milliseconds:
-    description: 'Your input description here'
+  subject:
+    description: The subject to publish to
     required: true
-    default: '1000'
+  message:
+    description: The message to publish
+    required: true
+    default: '{}'
+  urls:
+    description: The NATS server URLs
+    required: true
+  jwt:
+    description: The JWT to use for authentication
+    required: false
+  nKeySeed:
+    description: The NKey seed to use to sign the JWT
+    required: false
 
-# Define your outputs here.
 outputs:
-  time:
-    description: 'Your output description here'
-
+  published:
+    description: The published message
 runs:
   using: node20
   main: dist/index.js
