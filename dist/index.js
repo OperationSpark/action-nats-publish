@@ -19249,8 +19249,6 @@ async function run() {
         core.debug(`published message to ${subject}: ${message}`);
         core.debug(`draining...`);
         await nc.drain();
-        core.debug(`closing...`);
-        await nc.close();
         core.setOutput('published', `subject: ${subject}, message: ${message}`);
         // check if the close was OK
         const err = await nc.closed();
