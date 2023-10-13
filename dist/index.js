@@ -19246,6 +19246,10 @@ async function run() {
         const nKeySeed = core.getInput('nKeySeed');
         const nc = await (0, nats_1.connectToMQ)({ urls, jwt, nKeySeed });
         (0, nats_1.publishMessage)(nc, subject, message);
+        core.debug(`published message to ${subject}: ${message}`);
+        core.debug(`draining...`);
+        await nc.drain();
+        core.debug(`closing...`);
         await nc.close();
         core.setOutput('published', `subject: ${subject}, message: ${message}`);
         // check if the close was OK

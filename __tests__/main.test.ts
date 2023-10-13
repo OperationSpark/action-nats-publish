@@ -62,7 +62,8 @@ describe('action', () => {
         info,
         publish: jest.fn(),
         close: jest.fn(),
-        closed: jest.fn()
+        closed: jest.fn(),
+        drain: jest.fn()
       } as unknown as nats.NatsConnection
     }
     connectMock.mockImplementation(mockConnectImpl)
