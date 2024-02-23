@@ -19304,6 +19304,7 @@ const nats_1 = __nccwpck_require__(1954);
 async function connectToMQ({ urls: natsUrls, jwt, nKeySeed }) {
     const urls = natsUrls?.split(',') ?? [];
     const servers = urls.map(s => s.trim());
+    core.debug(`connecting to:\n${servers.join('\n')}`);
     const natsConn = await (0, nats_1.connect)({
         servers,
         authenticator: (0, nats_1.jwtAuthenticator)(jwt, new TextEncoder().encode(nKeySeed))
