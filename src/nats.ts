@@ -13,6 +13,7 @@ export async function connectToMQ({
   const urls = natsUrls?.split(',') ?? []
   const servers = urls.map(s => s.trim())
 
+  core.debug(`connecting to:\n${servers.join('\n')}`)
   const natsConn = await connect({
     servers,
     authenticator: jwtAuthenticator(jwt, new TextEncoder().encode(nKeySeed))
