@@ -1,7 +1,7 @@
 {
   "name": "action-nats-publish",
   "description": "Publish a message to NATS servers",
-  "version": "0.0.1",
+  "version": "0.0.2-0",
   "author": "OperationSpark",
   "private": true,
   "homepage": "https://github.com/OperationSpark/action-nats-publish",
