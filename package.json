@@ -1,16 +1,16 @@
 {
-  "name": "typescript-action",
-  "description": "GitHub Actions TypeScript template",
+  "name": "action-nats-publish",
+  "description": "Publish a message to NATS servers",
   "version": "0.0.1-0",
-  "author": "",
+  "author": "OperationSpark",
   "private": true,
-  "homepage": "https://github.com/actions/typescript-action",
+  "homepage": "https://github.com/OperationSpark/action-nats-publish",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/actions/typescript-action.git"
+    "url": "git+https://github.com/OperationSpark/action-nats-publish.git"
   },
   "bugs": {
-    "url": "https://github.com/actions/typescript-action/issues"
+    "url": "https://github.com/OperationSpark/action-nats-publish/issues"
   },
   "keywords": [
     "actions",
