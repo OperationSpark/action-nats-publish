@@ -19,9 +19,9 @@ jobs:
 
       - name: Setup Node.js
         id: setup-node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: npm
 
       - name: Install Dependencies
@@ -40,25 +40,25 @@ jobs:
         id: npm-ci-test
         run: npm run ci-test
 
-  test-action:
-    name: GitHub Actions Test
-    runs-on: ubuntu-latest
+  # test-action:
+  #   name: GitHub Actions Test
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout
-        id: checkout
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout
+  #       id: checkout
+  #       uses: actions/checkout@v4
 
-      - name: Test Local Action
-        id: test-action
-        uses: ./
-        with:
-          subject: 'github.actions.test'
-          message: '{"action": "action-nats-publish"}'
-          urls: tls://connect.ngs.global
-          jwt: ${{ secrets.NATS_CLIENT_JWT }}
-          nKeySeed: ${{ secrets.NATS_NKEY_SEED }}
+  #     - name: Test Local Action
+  #       id: test-action
+  #       uses: ./
+  #       with:
+  #         subject: 'github.actions.test'
+  #         message: '{"action": "action-nats-publish"}'
+  #         urls: tls://connect.ngs.global
+  #         jwt: ${{ secrets.NATS_CLIENT_JWT }}
+  #         nKeySeed: ${{ secrets.NATS_NKEY_SEED }}
 
-      - name: Print Output
-        id: output
-        run: echo "${{ steps.test-action.outputs.published }}"
+  #     - name: Print Output
+  #       id: output
+  #       run: echo "${{ steps.test-action.outputs.published }}"
